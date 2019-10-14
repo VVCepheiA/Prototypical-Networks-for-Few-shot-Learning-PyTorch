@@ -1,7 +1,7 @@
 # coding=utf-8
 from prototypical_batch_sampler import PrototypicalBatchSampler
 from prototypical_loss import prototypical_loss as loss_fn
-from omniglot_dataset import OmniglotDataset
+from tabula_muris_dataset import TabulaMurisDataset
 from protonet import ProtoNet
 from parser_util import get_parser
 
@@ -22,7 +22,7 @@ def init_seed(opt):
 
 
 def init_dataset(opt, mode):
-    dataset = OmniglotDataset(mode=mode, root=opt.dataset_root)
+    dataset = TabulaMurisDataset(mode=mode, root=opt.dataset_root)
     n_classes = len(np.unique(dataset.y))
     if n_classes < opt.classes_per_it_tr or n_classes < opt.classes_per_it_val:
         raise(Exception('There are not enough classes in the dataset in order ' +
