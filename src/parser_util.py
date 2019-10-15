@@ -8,7 +8,7 @@ def get_parser():
     parser.add_argument('-root', '--dataset_root',
                         type=str,
                         help='path to dataset',
-                        default='..' + os.sep + 'dataset')
+                        default='../../data/tabula_muris')
 
     parser.add_argument('-exp', '--experiment_root',
                         type=str,
@@ -42,8 +42,8 @@ def get_parser():
 
     parser.add_argument('-cTr', '--classes_per_it_tr',
                         type=int,
-                        help='number of random classes per episode for training, default=60',
-                        default=60)
+                        help='number of random classes per episode for training, default=10',
+                        default=10)
 
     parser.add_argument('-nsTr', '--num_support_tr',
                         type=int,
