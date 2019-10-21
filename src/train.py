@@ -22,7 +22,7 @@ def init_seed(opt):
 
 
 def init_dataset(opt, mode):
-    dataset = TabulaMurisDataset(mode=mode, root=opt.dataset_root)
+    dataset = TabulaMurisDataset(mode=mode, root=opt.dataset_root, nn_architecture=opt.nn_architecture)
     n_classes = len(np.unique(dataset.y))
     if n_classes < opt.classes_per_it_tr or n_classes < opt.classes_per_it_val:
         raise(Exception('There are not enough classes in the dataset in order ' +
@@ -52,12 +52,12 @@ def init_dataloader(opt, mode):
     return dataloader
 
 
-def init_protonet(opt):
+def init_protonet(opt, x_dim):
     '''
     Initialize the ProtoNet
     '''
     device = 'cuda:0' if torch.cuda.is_available() and opt.cuda else 'cpu'
-    model = ProtoNet().to(device)
+    model = ProtoNet(x_dim=x_dim, nn_architecture=opt.nn_architecture).to(device)
     return model
 
 
@@ -212,7 +212,7 @@ def main():
     # trainval_dataloader = init_dataloader(options, 'trainval')
     test_dataloader = init_dataloader(options, 'test')
 
-    model = init_protonet(options)
+    model = init_protonet(options, x_dim=tr_dataloader.dataset.get_dim())
     optim = init_optim(options, model)
     lr_scheduler = init_lr_scheduler(options, optim)
     res = train(opt=options,

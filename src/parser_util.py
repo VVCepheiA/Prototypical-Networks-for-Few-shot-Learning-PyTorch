@@ -79,4 +79,9 @@ def get_parser():
                         action='store_true',
                         help='enables cuda')
 
+    parser.add_argument('-arch', '--nn_architecture',
+                        type=str,
+                        help='Support convolutional (conv) or fully connected network (fully_).',
+                        default='fully_connected')
+
     return parser
