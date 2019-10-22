@@ -26,19 +26,19 @@ class TabulaMurisDataset(data.Dataset):
                           'val': ['Large_Intestine', 'Liver', 'Thymus'],
                           'test': ['Skin', 'Tongue', 'Spleen', 'Limb_Muscle']}
 
-    def __init__(self, mode='train', root='../../data/tabula_muris', nn_architecture='fully_connected'):
+    def __init__(self, opt, mode='train', root='../../data/tabula_muris'):
         '''
         The items are (filename,category). The index of all the categories can be found in self.idx_classes
         Args:
+        - mode: train, test or val
         - root: the directory where the dataset will be stored
-        - transform: how to transform the input
-        - target_transform: how to transform the target
         '''
 
         super(TabulaMurisDataset, self).__init__()
         self.root = root
         self.mode = mode
-        self.nn_architecture = nn_architecture
+        self.opt = opt
+        self.nn_architecture = opt.nn_architecture
 
         # load self.x, self.y, self.classes, self.idx_classes
         self.x, self.y, self.idx_classes, self.n_items = None, [], {}, 0

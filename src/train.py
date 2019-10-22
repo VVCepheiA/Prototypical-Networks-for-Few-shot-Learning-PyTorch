@@ -22,7 +22,7 @@ def init_seed(opt):
 
 
 def init_dataset(opt, mode):
-    dataset = TabulaMurisDataset(mode=mode, root=opt.dataset_root, nn_architecture=opt.nn_architecture)
+    dataset = TabulaMurisDataset(mode=mode, root=opt.dataset_root, opt=opt)
     n_classes = len(np.unique(dataset.y))
     if n_classes < opt.classes_per_it_tr or n_classes < opt.classes_per_it_val:
         raise(Exception('There are not enough classes in the dataset in order ' +
