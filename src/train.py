@@ -164,7 +164,7 @@ def test(opt, test_dataloader, model):
     '''
     device = 'cuda:0' if torch.cuda.is_available() and opt.cuda else 'cpu'
     avg_acc = list()
-    for epoch in range(10):
+    for epoch in range(opt.test_epochs):
         test_iter = iter(test_dataloader)
         for batch in test_iter:
             x, y = batch
@@ -177,7 +177,7 @@ def test(opt, test_dataloader, model):
     print('Test Acc: {}'.format(avg_acc))
 
     with open(os.path.join(opt.experiment_root, 'test_accuracy.txt'), 'w') as f:
-        f.wite(avg_acc)
+        f.write(avg_acc)
 
     return avg_acc
 

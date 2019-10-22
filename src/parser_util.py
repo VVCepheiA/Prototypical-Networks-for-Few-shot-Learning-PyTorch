@@ -20,6 +20,11 @@ def get_parser():
                         help='number of epochs to train for',
                         default=100)
 
+    parser.add_argument('-testep', '--test_epochs',
+                        type=int,
+                        help='number of epochs to test for',
+                        default=20)
+
     parser.add_argument('-lr', '--learning_rate',
                         type=float,
                         help='learning rate for the model, default=0.001',
@@ -42,8 +47,8 @@ def get_parser():
 
     parser.add_argument('-cTr', '--classes_per_it_tr',
                         type=int,
-                        help='number of random classes per episode for training, default=10',
-                        default=10)
+                        help='number of random classes per episode for training, default=20',
+                        default=20)
 
     parser.add_argument('-nsTr', '--num_support_tr',
                         type=int,
@@ -77,12 +82,13 @@ def get_parser():
                         default=7)
 
     parser.add_argument('--cuda',
-                        action='store_true',
-                        help='enables cuda')
+                        type=bool,
+                        help='enables cuda',
+                        default=False)
 
     parser.add_argument('-arch', '--nn_architecture',
                         type=str,
-                        help='Support convolutional (conv) or fully connected network (fully_).',
+                        help='Support convolutional (conv) or fully connected network (fully_connected).',
                         default='fully_connected')
 
     parser.add_argument('-split', '--split_file',
