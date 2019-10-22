@@ -24,10 +24,15 @@ def init_seed(opt):
 def init_dataset(opt, mode):
     dataset = TabulaMurisDataset(mode=mode, root=opt.dataset_root, opt=opt)
     n_classes = len(np.unique(dataset.y))
-    if n_classes < opt.classes_per_it_tr or n_classes < opt.classes_per_it_val:
-        raise(Exception('There are not enough classes in the dataset in order ' +
-                        'to satisfy the chosen classes_per_it. Decrease the ' +
-                        'classes_per_it_{tr/val} option and try again.'))
+    if n_classes < opt.classes_per_it_tr:
+        # Remove exception, use warning instead
+        print("Warning: in {} mode, n_classes ({}) < opt.classes_per_it_tr ({})!! Lowering classes per it."
+              .format(mode, n_classes, opt.classes_per_it_tr))
+        opt.classes_per_it_tr = n_classes
+    if n_classes < opt.classes_per_it_val:
+        print("Warning: in {} mode, n_classes ({}) < opt.classes_per_it_val ({})!! Lowering classes per it."
+              .format(mode, n_classes, opt.classes_per_it_val))
+        opt.classes_per_it_val = n_classes
     return dataset
 
 
@@ -170,6 +175,9 @@ def test(opt, test_dataloader, model):
             avg_acc.append(acc.item())
     avg_acc = np.mean(avg_acc)
     print('Test Acc: {}'.format(avg_acc))
+
+    with open(os.path.join(opt.experiment_root, 'test_accuracy.txt'), 'w') as f:
+        f.wite(avg_acc)
 
     return avg_acc
 

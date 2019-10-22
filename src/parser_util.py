@@ -57,7 +57,8 @@ def get_parser():
 
     parser.add_argument('-cVa', '--classes_per_it_val',
                         type=int,
-                        help='number of random classes per episode for validation, default=5',
+                        help='number of random classes per episode for validation, default=5. Setting this to a very '
+                             'high number will use all available classes in validation.',
                         default=5)
 
     parser.add_argument('-nsVa', '--num_support_val',
