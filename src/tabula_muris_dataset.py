@@ -1,17 +1,15 @@
 # coding=utf-8
 from __future__ import print_function
 import torch.utils.data as data
-from PIL import Image
 import numpy as np
 import pandas as pd
-import shutil
 import errno
 from pprint import pprint
 import torch
 import os
 from tqdm import tqdm
 import math
-
+import json
 '''
 Inspired by https://github.com/pytorch/vision/pull/46
 '''
@@ -21,10 +19,6 @@ class TabulaMurisDataset(data.Dataset):
 
     splits_folder = os.path.join('splits', 'vinyals')
     processed_folder = 'data'
-    tabula_muris_split = {'train': ['Bladder', 'Lung', 'Kidney', 'Heart', 'Pancreas', 'Brain_Myeloid', 'Marrow',
-                                    'Mammary_Gland', 'Brain_Non-Myeloid', 'Trachea', 'Fat'],
-                          'val': ['Large_Intestine', 'Liver', 'Thymus'],
-                          'test': ['Skin', 'Tongue', 'Spleen', 'Limb_Muscle']}
 
     def __init__(self, opt, mode='train', root='../../data/tabula_muris'):
         '''
@@ -39,6 +33,11 @@ class TabulaMurisDataset(data.Dataset):
         self.mode = mode
         self.opt = opt
         self.nn_architecture = opt.nn_architecture
+        # Default split
+        self.split = {'train': ['Bladder', 'Lung', 'Kidney', 'Heart', 'Pancreas', 'Brain_Myeloid', 'Marrow',
+                                    'Mammary_Gland', 'Brain_Non-Myeloid', 'Trachea', 'Fat'],
+                          'val': ['Large_Intestine', 'Liver', 'Thymus'],
+                          'test': ['Skin', 'Tongue', 'Spleen', 'Limb_Muscle']}
         if opt.split_file:
             self.load_split()
 
@@ -47,13 +46,14 @@ class TabulaMurisDataset(data.Dataset):
         self.load_data()
 
     def load_split(self):
-        pass
+        with open(self.opt.split_file) as f:
+            self.split = json.load(f)
 
     def load_data(self):
         self.idx_classes = {}
         tensors = []
         self.y = []
-        tissues = self.tabula_muris_split[self.mode]
+        tissues = self.split[self.mode]
         print("Loading data...")
         for tissue in tqdm(tissues):
             tissue_dir = os.path.join(self.root, tissue)
@@ -89,7 +89,7 @@ class TabulaMurisDataset(data.Dataset):
         if self.nn_architecture == 'conv':
             num_data = x.shape[0]
             num_dim = x.shape[1]
-            sqrt = math.ceil(math.sqrt(num_dim))
+            sqrt = int(math.ceil(math.sqrt(num_dim)))
             # pad zero and then reshape to square matrix
             x = np.pad(x, ((0, 0), (0, sqrt**2 - num_dim)), 'constant')
             x = torch.from_numpy(x)
