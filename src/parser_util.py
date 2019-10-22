@@ -84,4 +84,9 @@ def get_parser():
                         help='Support convolutional (conv) or fully connected network (fully_).',
                         default='fully_connected')
 
+    parser.add_argument('-split', '--split_file',
+                        type=str,
+                        help='File that defines train, test, val split.',
+                        default=None)
+
     return parser

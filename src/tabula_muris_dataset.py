@@ -39,10 +39,15 @@ class TabulaMurisDataset(data.Dataset):
         self.mode = mode
         self.opt = opt
         self.nn_architecture = opt.nn_architecture
+        if opt.split_file:
+            self.load_split()
 
         # load self.x, self.y, self.classes, self.idx_classes
         self.x, self.y, self.idx_classes, self.n_items = None, [], {}, 0
         self.load_data()
+
+    def load_split(self):
+        pass
 
     def load_data(self):
         self.idx_classes = {}
