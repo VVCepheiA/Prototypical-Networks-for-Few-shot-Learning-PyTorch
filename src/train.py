@@ -24,15 +24,19 @@ def init_seed(opt):
 def init_dataset(opt, mode):
     dataset = TabulaMurisDataset(mode=mode, root=opt.dataset_root, opt=opt)
     n_classes = len(np.unique(dataset.y))
-    if n_classes < opt.classes_per_it_tr:
+    if mode == 'train' and n_classes < opt.classes_per_it_tr:
         # Remove exception, use warning instead
         print("Warning: in {} mode, n_classes ({}) < opt.classes_per_it_tr ({})!! Lowering classes per it."
               .format(mode, n_classes, opt.classes_per_it_tr))
         opt.classes_per_it_tr = n_classes
-    if n_classes < opt.classes_per_it_val:
+    elif mode == 'val' and n_classes < opt.classes_per_it_val:
         print("Warning: in {} mode, n_classes ({}) < opt.classes_per_it_val ({})!! Lowering classes per it."
               .format(mode, n_classes, opt.classes_per_it_val))
         opt.classes_per_it_val = n_classes
+    elif mode == 'test' and n_classes < opt.classes_per_it_test:
+        print("Warning: in {} mode, n_classes ({}) < opt.classes_per_it_val ({})!! Lowering classes per it."
+              .format(mode, n_classes, opt.classes_per_it_test))
+        opt.classes_per_it_test = n_classes
     return dataset
 
 
@@ -41,7 +45,7 @@ def init_sampler(opt, labels, mode):
         classes_per_it = opt.classes_per_it_tr
         num_samples = opt.num_support_tr + opt.num_query_tr
     else:
-        classes_per_it = opt.classes_per_it_val
+        classes_per_it = opt.classes_per_it_test
         num_samples = opt.num_support_val + opt.num_query_val
 
     return PrototypicalBatchSampler(labels=labels,
@@ -177,7 +181,7 @@ def test(opt, test_dataloader, model):
     print('Test Acc: {}'.format(avg_acc))
 
     with open(os.path.join(opt.experiment_root, 'test_accuracy.txt'), 'w') as f:
-        f.write(avg_acc)
+        f.write(str(avg_acc))
 
     return avg_acc
 
@@ -192,7 +196,7 @@ def eval(opt):
         print("WARNING: You have a CUDA device, so you should probably run with --cuda")
 
     init_seed(options)
-    test_dataloader = init_dataset(options)[-1]
+    test_dataloader = init_dataset(options, 'test')
     model = init_protonet(options)
     model_path = os.path.join(opt.experiment_root, 'best_model.pth')
     model.load_state_dict(torch.load(model_path))

@@ -76,6 +76,12 @@ def get_parser():
                         help='number of samples per class to use as query for validation, default=15',
                         default=15)
 
+    parser.add_argument('-cTe', '--classes_per_it_test',
+                        type=int,
+                        help='number of random classes per episode for test, default=5. Setting this to a very '
+                             'high number will use all available classes in validation.',
+                        default=5)
+
     parser.add_argument('-seed', '--manual_seed',
                         type=int,
                         help='input for the manual seeds initializations',
