@@ -34,20 +34,24 @@ def init_dataset(opt, mode):
               .format(mode, n_classes, opt.classes_per_it_val))
         opt.classes_per_it_val = n_classes
     elif mode == 'test' and n_classes < opt.classes_per_it_test:
-        print("Warning: in {} mode, n_classes ({}) < opt.classes_per_it_val ({})!! Lowering classes per it."
+        print("Warning: in {} mode, n_classes ({}) < opt.classes_per_it_test ({})!! Lowering classes per it."
               .format(mode, n_classes, opt.classes_per_it_test))
         opt.classes_per_it_test = n_classes
     return dataset
 
 
 def init_sampler(opt, labels, mode):
-    if 'train' in mode:
+    if mode == 'train':
         classes_per_it = opt.classes_per_it_tr
         num_samples = opt.num_support_tr + opt.num_query_tr
-    else:
-        classes_per_it = opt.classes_per_it_test
+    elif mode == 'val':
+        classes_per_it = opt.classes_per_it_val
         num_samples = opt.num_support_val + opt.num_query_val
-
+    elif mode == 'test':
+        classes_per_it = opt.classes_per_it_test
+        num_samples = opt.num_support_test + opt.num_query_test
+    else:
+        raise Exception("Invalid mode", mode)
     return PrototypicalBatchSampler(labels=labels,
                                     classes_per_it=classes_per_it,
                                     num_samples=num_samples,

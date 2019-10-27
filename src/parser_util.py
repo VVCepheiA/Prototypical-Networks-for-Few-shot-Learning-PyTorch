@@ -82,6 +82,16 @@ def get_parser():
                              'high number will use all available classes in validation.',
                         default=5)
 
+    parser.add_argument('-nsTe', '--num_support_test',
+                        type=int,
+                        help='number of samples per class to use as support for test, default=5',
+                        default=5)
+
+    parser.add_argument('-nqTe', '--num_query_test',
+                        type=int,
+                        help='number of samples per class to use as query for test, default=15',
+                        default=15)
+
     parser.add_argument('-seed', '--manual_seed',
                         type=int,
                         help='input for the manual seeds initializations',
