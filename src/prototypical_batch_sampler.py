@@ -45,6 +45,9 @@ class PrototypicalBatchSampler(object):
             self.indexes[label_idx, np.where(np.isnan(self.indexes[label_idx]))[0][0]] = idx
             self.numel_per_class[label_idx] += 1
 
+        # make sure each class has enough samples
+        assert(torch.min(self.numel_per_class) >= num_samples)
+
     def __iter__(self):
         """
         yield a batch of indexes

@@ -66,8 +66,7 @@ class TabulaMurisDataset(data.Dataset):
         else:
             # TODO: change this if there is num_support_test in the future
             min_samples = self.opt.num_support_val + self.opt.num_query_val
-        min_samples = 21
-        filtered_index = self.adata.obs.groupby(["cell_ontology_class_reannotated"]) \
+        filtered_index = self.adata.obs.groupby(["label"]) \
                                        .filter(lambda group: len(group) >= min_samples) \
                                        .reset_index()['index']
         self.adata = self.adata[filtered_index]
@@ -75,7 +74,6 @@ class TabulaMurisDataset(data.Dataset):
         # convert gene to torch tensor x
         self.x = self.adata.to_df().to_numpy(dtype=np.float32)
         self.process_x_tensor()
-        print(self.x)
         # convert label to torch tensor y
         self.y = self.adata.obs['label'].cat.codes.to_numpy(dtype=np.int32)
 
