@@ -22,29 +22,15 @@ def main():
     opt = {}
     for arg in vars(options):
         opt[arg] = getattr(options, arg)
-    tissues = ['Bladder',
-               'Large_Intestine',
-               'Thymus',
-               'Skin',
-               'Lung',
-               'Liver',
-               'Spleen',
-               'Kidney',
-               'Tongue',
-               'Heart',
-               'Pancreas',
-               'Brain_Myeloid',
-               'Marrow',
-               'Mammary_Gland',
-               'Limb_Muscle',
-               'Brain_Non-Myeloid',
-               'Trachea',
-               'Fat']
+
+    split_dir = os.path.join(options.dataset_root, "tabula_muris_split")
+    tissues = os.listdir(split_dir)
+
     for tissue in tqdm(tissues):
         full_dir = os.path.join(options.experiment_root, tissue)
         mkdir_p(full_dir)
         opt["experiment_root"] = full_dir
-        opt["split_file"] = "../../data/tabula_muris_split/{}/split.json".format(tissue)
+        opt["split_file"] = os.path.join(split_dir, tissue, "split.json")
         command = "python train.py"
         for arg in opt:
             command += " --{} {}".format(arg, opt[arg])
