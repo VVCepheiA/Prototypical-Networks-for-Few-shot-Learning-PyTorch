@@ -1,5 +1,6 @@
 # coding=utf-8
 from __future__ import print_function
+from anndata import read_h5ad
 import torch.utils.data as data
 import numpy as np
 import pandas as pd
@@ -40,9 +41,11 @@ class TabulaMurisDataset(data.Dataset):
                           'test': ['Skin', 'Tongue', 'Spleen', 'Limb_Muscle']}
         if opt.split_file:
             self.load_split()
+        # load anndata
+        self.adata = read_h5ad(os.path.join(self.root, "tabula-muris-official-processed.h5ad"))
 
-        # load self.x, self.y, self.classes, self.idx_classes
-        self.x, self.y, self.idx_classes, self.n_items = None, [], {}, 0
+        # load self.x, self.y
+        self.x, self.y, self.n_items = None, [], 0
         self.load_data()
 
     def load_split(self):
@@ -51,23 +54,33 @@ class TabulaMurisDataset(data.Dataset):
 
     def load_data(self):
         self.idx_classes = {}
-        tensors = []
         self.y = []
         tissues = self.split[self.mode]
-        print("Loading data...")
-        for tissue in tqdm(tissues):
-            tissue_dir = os.path.join(self.root, tissue)
-            cell_ontology_classes = os.listdir(tissue_dir)
-            for cell_ontology_class in cell_ontology_classes:
-                label = tissue + "/" + cell_ontology_class
-                self.idx_classes[label] = len(self.idx_classes)
-                path = os.path.join(tissue_dir, cell_ontology_class, "genes.csv")
-                tensor = self.read_csv_to_tensor(path)
-                tensors.append(tensor)
-                self.y += tensor.shape[0] * [self.idx_classes[label]]
-        self.x = torch.cat(tensors, 0)
+
+        # subset data based on target tissues
+        self.adata = self.adata[self.adata.obs['tissue'].isin(tissues)]
+
+        # filter gene less than required amount
+        if self.mode == 'train':
+            min_samples = self.opt.num_support_tr + self.opt.num_query_tr
+        else:
+            # TODO: change this if there is num_support_test in the future
+            min_samples = self.opt.num_support_val + self.opt.num_query_val
+        min_samples = 21
+        filtered_index = self.adata.obs.groupby(["cell_ontology_class_reannotated"]) \
+                                       .filter(lambda group: len(group) >= min_samples) \
+                                       .reset_index()['index']
+        self.adata = self.adata[filtered_index]
+
+        # convert gene to torch tensor x
+        self.x = self.adata.to_df().to_numpy(dtype=np.float32)
+        self.process_x_tensor()
+        print(self.x)
+        # convert label to torch tensor y
+        self.y = self.adata.obs['label'].cat.codes.to_numpy(dtype=np.int32)
+
         self.n_items = self.x.shape[0]
-        print("Mode: {}. Loaded {} classes.".format(self.mode, len(self.idx_classes)))
+        print("Mode: {}. Loaded {} classes.".format(self.mode, len(self.adata.obs['label'].cat.codes.unique())))
         print("X shape: {}. Y length: {}.".format(self.x.shape, len(self.y)))
 
     def __getitem__(self, idx):
@@ -83,16 +96,16 @@ class TabulaMurisDataset(data.Dataset):
         else:
             return 1
 
-    def read_csv_to_tensor(self, path):
-        df = pd.read_csv(path, header=None)
-        x = torch.from_numpy(df.to_numpy(dtype=np.float32))
+    def process_x_tensor(self):
         if self.nn_architecture == 'conv':
-            num_data = x.shape[0]
-            num_dim = x.shape[1]
+            num_data = self.x.shape[0]
+            num_dim = self.x.shape[1]
             sqrt = int(math.ceil(math.sqrt(num_dim)))
             # pad zero and then reshape to square matrix
-            x = np.pad(x, ((0, 0), (0, sqrt**2 - num_dim)), 'constant')
-            x = torch.from_numpy(x)
-            x = x[:, :sqrt**2].view(num_data, 1, sqrt, sqrt)
-        return x
+            self.x = np.pad(self.x, ((0, 0), (0, sqrt**2 - num_dim)), 'constant')
+            self.x = torch.from_numpy(self.x)
+            self.x = self.x[:, :sqrt**2].view(num_data, 1, sqrt, sqrt)
+        else:
+            self.x = torch.from_numpy(self.x)
+        return
 
