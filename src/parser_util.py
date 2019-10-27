@@ -92,6 +92,11 @@ def get_parser():
                         help='enables cuda',
                         default=False)
 
+    parser.add_argument('-gid', '--gpu_id',
+                        type=int,
+                        help='cuda dvice id',
+                        default=0)
+
     parser.add_argument('-arch', '--nn_architecture',
                         type=str,
                         help='Support convolutional (conv) or fully connected network (fully_connected).',

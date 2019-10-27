@@ -1,8 +1,8 @@
 """
 A script to train and test models for all the tissues
 Example usage:
-python train_all_tissues.py -exp ../output/output_all_tissues_nn -nep 50 -testep 50 -arch fully_connected
-python train_all_tissues.py -exp ../output/output_all_tissues_conv -nep 50 -testep 50 -arch conv
+python train_all_tissues.py -exp ../output/output_all_tissues_nn -nep 50 -testep 50 -arch fully_connected --cuda True
+python train_all_tissues.py -exp ../output/output_all_tissues_conv -nep 50 -testep 50 -arch conv --cuda True
 """
 
 import os

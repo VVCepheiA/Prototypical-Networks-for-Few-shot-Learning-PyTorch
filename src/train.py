@@ -65,7 +65,7 @@ def init_protonet(opt, x_dim):
     '''
     Initialize the ProtoNet
     '''
-    device = 'cuda:0' if torch.cuda.is_available() and opt.cuda else 'cpu'
+    device = 'cuda:{}'.format(opt.gpu_id) if torch.cuda.is_available() and opt.cuda else 'cpu'
     model = ProtoNet(x_dim=x_dim, nn_architecture=opt.nn_architecture).to(device)
     return model
 
@@ -98,7 +98,7 @@ def train(opt, tr_dataloader, model, optim, lr_scheduler, val_dataloader=None):
     Train the model with the prototypical learning algorithm
     '''
 
-    device = 'cuda:0' if torch.cuda.is_available() and opt.cuda else 'cpu'
+    device = 'cuda:{}'.format(opt.gpu_id) if torch.cuda.is_available() and opt.cuda else 'cpu'
 
     if val_dataloader is None:
         best_state = None
@@ -166,7 +166,7 @@ def test(opt, test_dataloader, model):
     '''
     Test the model trained with the prototypical learning algorithm
     '''
-    device = 'cuda:0' if torch.cuda.is_available() and opt.cuda else 'cpu'
+    device = 'cuda:{}'.format(opt.gpu_id) if torch.cuda.is_available() and opt.cuda else 'cpu'
     avg_acc = list()
     for epoch in range(opt.test_epochs):
         test_iter = iter(test_dataloader)
