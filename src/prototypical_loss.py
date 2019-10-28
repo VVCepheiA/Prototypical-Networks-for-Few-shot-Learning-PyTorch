@@ -2,6 +2,7 @@
 import torch
 from torch.nn import functional as F
 from torch.nn.modules import Module
+from sklearn.metrics import f1_score
 
 
 class PrototypicalLoss(Module):
@@ -34,7 +35,7 @@ def euclidean_dist(x, y):
     return torch.pow(x - y, 2).sum(2)
 
 
-def prototypical_loss(input, target, n_support):
+def prototypical_loss(input, target, n_support, all_metrics=False):
     '''
     Inspired by https://github.com/jakesnell/prototypical-networks/blob/master/protonets/models/few_shot.py
 
@@ -83,4 +84,13 @@ def prototypical_loss(input, target, n_support):
     _, y_hat = log_p_y.max(2)
     acc_val = y_hat.eq(target_inds.squeeze()).float().mean()
 
-    return loss_val,  acc_val
+    metrics = acc_val
+
+    if all_metrics:
+        target_flattened = torch.flatten(target_inds.squeeze())
+        y_hat_flattened = torch.flatten(y_hat)
+        f1_macro = f1_score(y_hat_flattened, target_flattened, average='macro')
+        f1_micro = f1_score(y_hat_flattened, target_flattened, average='micro')
+        metrics = (acc_val, f1_macro, f1_micro)
+
+    return loss_val, metrics

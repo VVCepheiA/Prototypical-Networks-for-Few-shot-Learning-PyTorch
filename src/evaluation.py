@@ -4,7 +4,6 @@ from prototypical_loss import prototypical_loss as loss_fn
 from protonet import ProtoNet
 from parser_util import get_parser
 from train import init_seed, init_dataloader, init_protonet
-from sklearn.metrics import f1_score
 from collections import defaultdict
 from pprint import pprint
 import json
@@ -28,29 +27,24 @@ def test(opt, test_dataloader, model):
             x, y = batch
             x, y = x.to(device), y.to(device)
             model_output = model(x)
-            _, acc = loss_fn(model_output, target=y,
-                             n_support=opt.num_support_val)
+            _, metrics = loss_fn(input=model_output,
+                                 target=y,
+                                 n_support=opt.num_support_val,
+                                 all_metrics=True)
+            acc, macro_f1, micro_f1 = metrics
             scores['accuracy'].append(acc.item())
-
-            # DEBUG
-            output_np = model_output.detach().numpy()
-            y_np = y.detach().numpy()
-            print("acc", acc, acc.item(), type(acc))
-            print("Output", output_np, output_np.shape)
-            print("y", y_np, y_np.shape)
-
-            scores['macro_f1'].append(f1_score(model_output.detach().numpy(), y.detach().numpy(), average='macro'))
-            scores['micro_f1'].append(f1_score(model_output.detach().numpy(), y.detach().numpy(), average='micro'))
-            print("acc", acc, acc.item())
+            scores['macro_f1'].append(macro_f1)
+            scores['micro_f1'].append(micro_f1)
 
     for metric in scores:
         res[metric] = np.mean(scores[metric])
+
     pprint(res)
 
     with open(os.path.join(opt.experiment_root, 'test_metrics.txt'), 'w') as f:
         json.dump(res, f)
 
-    return avg_acc
+    return res
 
 
 def main():
