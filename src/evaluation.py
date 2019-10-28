@@ -29,7 +29,7 @@ def test(opt, test_dataloader, model):
             model_output = model(x)
             _, metrics = loss_fn(input=model_output,
                                  target=y,
-                                 n_support=opt.num_support_val,
+                                 n_support=opt.num_support_test,
                                  all_metrics=True)
             acc, macro_f1, micro_f1 = metrics
             scores['accuracy'].append(acc.item())
