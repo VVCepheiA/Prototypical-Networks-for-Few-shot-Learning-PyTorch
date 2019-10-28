@@ -58,7 +58,7 @@ def get_parser():
     parser.add_argument('-nqTr', '--num_query_tr',
                         type=int,
                         help='number of samples per class to use as query for training, default=5',
-                        default=5)
+                        default=15)
 
     parser.add_argument('-cVa', '--classes_per_it_val',
                         type=int,
