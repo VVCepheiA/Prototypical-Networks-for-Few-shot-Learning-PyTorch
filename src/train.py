@@ -9,6 +9,7 @@ from tqdm import tqdm
 import numpy as np
 import torch
 import os
+import json
 
 
 def init_seed(opt):
@@ -210,6 +211,12 @@ def eval(opt):
          model=model)
 
 
+def save_args(opt):
+    file_path = os.path.join(opt.experiment_root, 'options.txt')
+    with open(file_path, 'w') as f:
+        json.dump(opt.__dict__, f)
+
+
 def main():
     '''
     Initialize everything and train
@@ -217,6 +224,8 @@ def main():
     options = get_parser().parse_args()
     if not os.path.exists(options.experiment_root):
         os.makedirs(options.experiment_root)
+
+    save_args(options)
 
     if torch.cuda.is_available() and not options.cuda:
         print("WARNING: You have a CUDA device, so you should probably run with --cuda")
