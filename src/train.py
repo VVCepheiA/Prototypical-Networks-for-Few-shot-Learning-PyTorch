@@ -10,6 +10,7 @@ import numpy as np
 import torch
 import os
 import json
+import utils
 
 
 def init_seed(opt):
@@ -92,12 +93,6 @@ def init_lr_scheduler(opt, optim):
                                            step_size=opt.lr_scheduler_step)
 
 
-def save_list_to_file(path, thelist):
-    with open(path, 'w') as f:
-        for item in thelist:
-            f.write("%s\n" % item)
-
-
 def train(opt, tr_dataloader, model, optim, lr_scheduler, val_dataloader=None):
     '''
     Train the model with the prototypical learning algorithm
@@ -161,7 +156,7 @@ def train(opt, tr_dataloader, model, optim, lr_scheduler, val_dataloader=None):
     torch.save(model.state_dict(), last_model_path)
 
     for name in ['train_loss', 'train_acc', 'val_loss', 'val_acc']:
-        save_list_to_file(os.path.join(opt.experiment_root,
+        utils.save_list_to_file(os.path.join(opt.experiment_root,
                                        name + '.txt'), locals()[name])
 
     return best_state, best_acc, train_loss, train_acc, val_loss, val_acc
@@ -257,22 +252,6 @@ def main():
     test(opt=options,
          test_dataloader=test_dataloader,
          model=model)
-
-    # optim = init_optim(options, model)
-    # lr_scheduler = init_lr_scheduler(options, optim)
-
-    # print('Training on train+val set..')
-    # train(opt=options,
-    #       tr_dataloader=trainval_dataloader,
-    #       val_dataloader=None,
-    #       model=model,
-    #       optim=optim,
-    #       lr_scheduler=lr_scheduler)
-
-    # print('Testing final model..')
-    # test(opt=options,
-    #      test_dataloader=test_dataloader,
-    #      model=model)
 
 
 if __name__ == '__main__':

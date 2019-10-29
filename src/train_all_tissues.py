@@ -6,15 +6,9 @@ python train_all_tissues.py -exp ../output/output_all_tissues_conv -nep 50 -test
 """
 
 import os
-import pathlib
 from tqdm import tqdm
 from parser_util import get_parser
-
-
-def mkdir_p(full_dir):
-    """Simulate mkdir -p"""
-    if not os.path.exists(full_dir):
-        pathlib.Path(full_dir).mkdir(parents=True, exist_ok=True)
+import utils
 
 
 def main():
@@ -28,7 +22,7 @@ def main():
 
     for tissue in tqdm(tissues):
         full_dir = os.path.join(options.experiment_root, tissue)
-        mkdir_p(full_dir)
+        utils.mkdir_p(full_dir)
         opt["experiment_root"] = full_dir
         opt["split_file"] = os.path.join(split_dir, tissue, "split.json")
         command = "python train.py"

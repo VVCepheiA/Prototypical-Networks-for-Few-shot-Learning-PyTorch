@@ -14,6 +14,7 @@ import torch
 import os
 
 """
+Evaluate a single model
 Important params:
 opt.experiment_root
 opt.test_result_file
