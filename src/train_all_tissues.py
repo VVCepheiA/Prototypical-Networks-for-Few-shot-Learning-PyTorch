@@ -24,7 +24,7 @@ def main():
         opt[arg] = getattr(options, arg)
 
     split_dir = os.path.join(options.dataset_root, "tabula_muris_split")
-    tissues = os.listdir(split_dir)
+    tissues = ["Marrow", "Skin", "Large_Intestine", "Tongue", "Lung", "Thymus", "Liver", "Aorta", "Trachea", "Pancreas"]
 
     for tissue in tqdm(tissues):
         full_dir = os.path.join(options.experiment_root, tissue)
