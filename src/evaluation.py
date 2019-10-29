@@ -13,6 +13,13 @@ import numpy as np
 import torch
 import os
 
+"""
+Evaluate a single model
+Important params:
+opt.experiment_root
+opt.test_result_file
+"""
+
 
 def test(opt, test_dataloader, model):
     '''
@@ -41,7 +48,7 @@ def test(opt, test_dataloader, model):
 
     pprint(res)
 
-    with open(os.path.join(opt.experiment_root, 'test_metrics.txt'), 'w') as f:
+    with open(os.path.join(opt.experiment_root, opt.test_result_file), 'w') as f:
         json.dump(res, f)
 
     return res
@@ -49,7 +56,7 @@ def test(opt, test_dataloader, model):
 
 def main():
     '''
-    Initialize everything and train
+    Initialize everything and run test
     '''
     options = get_parser().parse_args()
 

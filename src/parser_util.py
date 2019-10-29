@@ -117,4 +117,9 @@ def get_parser():
                         help='File that defines train, test, val split.',
                         default=None)
 
+    parser.add_argument('-res', '--test_result_file',
+                        type=str,
+                        help='File that the test results are written to.',
+                        default='test_metrics.txt')
+
     return parser
