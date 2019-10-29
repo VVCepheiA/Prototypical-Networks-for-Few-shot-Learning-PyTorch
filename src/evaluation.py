@@ -13,6 +13,12 @@ import numpy as np
 import torch
 import os
 
+"""
+Important params:
+opt.experiment_root
+opt.test_result_file
+"""
+
 
 def test(opt, test_dataloader, model):
     '''
