@@ -89,8 +89,8 @@ def prototypical_loss(input, target, n_support, all_metrics=False):
     if all_metrics:
         target_flattened = torch.flatten(target_inds.squeeze())
         y_hat_flattened = torch.flatten(y_hat)
-        f1_macro = f1_score(y_hat_flattened, target_flattened, average='macro')
-        f1_micro = f1_score(y_hat_flattened, target_flattened, average='micro')
+        f1_macro = f1_score(target_flattened, y_hat_flattened, average='macro')
+        f1_micro = f1_score(target_flattened, y_hat_flattened, average='micro')
         metrics = (acc_val, f1_macro, f1_micro)
 
     return loss_val, metrics
