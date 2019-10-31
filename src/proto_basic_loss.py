@@ -54,6 +54,7 @@ def get_idxs(n_support, target):
 
 def prototypical_loss(input, target, n_support):
     input_cpu = input.to('cpu')
+    target_cpu = target.to('cpu')
    
     support_idxs, query_idxs = get_idxs(n_support, target)
     prototypes = torch.stack([input_cpu[idx_class].mean(0) for idx_class in support_idxs])
@@ -63,7 +64,7 @@ def prototypical_loss(input, target, n_support):
     log_p_y = F.log_softmax(-dists, dim=1)
 
     ######## Experimental ########
-    target = target[query_idxs]
+    target = target_cpu[query_idxs]
     target_inds = target.long()
     ######## Experimental ########
     
