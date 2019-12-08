@@ -29,11 +29,13 @@ class AttentionProtonet(nn.Module):
     Model as described in the reference paper,
     source: https://github.com/jakesnell/prototypical-networks/blob/f0c48808e496989d01db59f86d4449d7aee9ab0c/protonets/models/few_shot.py#L62-L84
     '''
-    def __init__(self, x_dim, go_mask, hid_dim=64, z_dim=64, dropout=0.2):
+    def __init__(self, x_dim, go_mask, hid_dim=64, z_dim=64):
         print("Using AttentionProtoNet with x_dim {}".format(x_dim))
         super(AttentionProtonet, self).__init__()
 
-        self.go_mask = generate_simple_go_mask(x_dim=x_dim, num_GOs=3)
+        # self.go_mask = generate_simple_go_mask(x_dim=x_dim, num_GOs=3) # for testing
+        self.go_mask = go_mask
+
         self.num_GOs = len(self.go_mask)
         self.masks = None
         self.z_dim = z_dim

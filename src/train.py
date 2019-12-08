@@ -68,12 +68,12 @@ def init_dataloader(opt, mode):
     return dataloader
 
 
-def init_protonet(opt, x_dim):
+def init_protonet(opt, go_mask, x_dim):
     '''
     Initialize the ProtoNet
     '''
     device = 'cuda:{}'.format(opt.gpu_id) if torch.cuda.is_available() and opt.cuda else 'cpu'
-    model = AttentionProtonet(x_dim=x_dim, go_mask=None).to(device)
+    model = AttentionProtonet(x_dim=x_dim, go_mask=go_mask).to(device)
     # model = ProtoNet(x_dim=x_dim, nn_architecture=opt.nn_architecture).to(device)
     return model
 
@@ -234,7 +234,7 @@ def main():
     # trainval_dataloader = init_dataloader(options, 'trainval')
     test_dataloader = init_dataloader(options, 'test')
 
-    model = init_protonet(options, x_dim=tr_dataloader.dataset.get_dim())
+    model = init_protonet(options, go_mask=tr_dataloader.dataset.go_mask, x_dim=tr_dataloader.dataset.get_dim())
     optim = init_optim(options, model)
     lr_scheduler = init_lr_scheduler(options, optim)
     res = train(opt=options,
