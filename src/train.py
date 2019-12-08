@@ -4,6 +4,7 @@ from prototypical_loss import prototypical_loss as loss_fn
 from tabula_muris_dataset import TabulaMurisDataset
 from protonet import ProtoNet
 from parser_util import get_parser
+from protonet_go_mask import AttentionProtonet
 
 from tqdm import tqdm
 import numpy as np
@@ -72,7 +73,8 @@ def init_protonet(opt, x_dim):
     Initialize the ProtoNet
     '''
     device = 'cuda:{}'.format(opt.gpu_id) if torch.cuda.is_available() and opt.cuda else 'cpu'
-    model = ProtoNet(x_dim=x_dim, nn_architecture=opt.nn_architecture).to(device)
+    model = AttentionProtonet(x_dim=x_dim, go_mask=None).to(device)
+    # model = ProtoNet(x_dim=x_dim, nn_architecture=opt.nn_architecture).to(device)
     return model
 
 
